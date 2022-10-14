@@ -1,6 +1,8 @@
 
 
 #Caso - la cadena de la subsecuencia tiene las dos mismas letras
+
+
 def conteoOcurrencias(X,Y,m):
     conteo = 0
     n = len(X)
@@ -12,66 +14,64 @@ def conteoOcurrencias(X,Y,m):
     #Definición Sumatoria
     return ((conteo-1)*conteo)/2
 
-#No sirve nada aún
 """
-#Caso - la cadena tiene letras diferentes
-def sol(ind,mRes,prim,X,Y):
+
+def solve(i, j, k):
+    if i >= n:
+        return 0
+    if dp[i][j][k] != -1:# memo法
+        return dp[i][j][k]
+    o = solve(i+1, j, k) # (1) 当前位置 不修改 最大子序列数目
+    c = s[i] != t[0]     # 当前位置是否需要用t[0]修改
+    if k >= c:           # 还有修改的机会
+        o = max(o, solve(i+1, j+1, k-c)) # (2) 使用t[0]修改之后最大子序列数目
+    c = s[i] != t[1]     
+    if k >= c:           
+        o = max(o, solve(i+1, j+(t[0] == t[1]), k-c) + j) 
+    dp[i][j][k] = o      
+    return o
+ 
+n, k = map(int, input().split())
+s = input()
+t = input()
+ 
+dp = [[[-1] * (n+1) for _ in [0]*n] for _ in [0]*n]
+ 
+print(solve(0, 0, k))
+
+"""
+
+
+def subSeqDif(ind,prim,kRes,X,Y):
     n = len(X)
-    #Inicializar matriz DP con -1
-    matPrim = [-1]*1000
-    matResK = [matPrim]*1000
-    matInd = [matResK]*1000
+    DP = [[[-1] * (n+1) for _ in [0]*n] for _ in [0]*n]
+    if (ind >= n):
+        return 0
+    if (not (DP[ind][prim][kRes] == -1)):
+        return DP[ind][prim][kRes]
+    sol = subSeqDif(ind+1,prim,kRes,X,Y)
+    cond = (not (X[ind] == Y[0]))
+    if kRes >= cond:
+        sol = max(sol, subSeqDif(ind+1, prim+1, kRes-cond,X,Y))
+    cond = (not (X[ind] == Y[1]))
+    cond2 = (not (X[ind] == Y[1]))
+    if kRes >= cond:
+        sol = max(sol, prim + subSeqDif(ind+1, prim+cond2, kRes-cond,X,Y))
+    DP[ind][prim][kRes] = sol
+    return sol
 
 
-    terminado = False
-    resultado = 0
-    r = 0
-    r1 = 0
-    r2 = 0
-    r3 = 0
 
-    while (not terminado):
-        if (ind == n): #Ultima comparacion
-            terminado = True
-        if (mRes == 0):
-            if (X[ind] == Y[1]):
-                r = prim + sol(ind+1,0,prim,X,Y)
-            else:
-                if (X[ind]==Y[0]):
-                    r = sol(ind+1,0,prim+1,X,Y)
-                else:
-                    r = sol(ind+1,0,prim,X,Y)
-        else:
-            if (X[ind] == Y[0]):
-                r1 = sol(ind+1,mRes,prim+1,X,Y)
-                r2 = prim + sol(ind+1,mRes-1,prim,X,Y)
-                r = max(r1,r2)
-            elif (X[ind] == Y[1]):
-                #Decisión - dejar el string como está o cambiarlo por el primer elemento
-                r1 = sol(ind+1,mRes-1,prim+1,X,Y)
-                r2 = prim + sol(ind+1,mRes,prim,X,Y)
-                r = max(r1,r2)
-            else:
-                #Decidir para cambio entre el primer elemento o el segundo elemento
-                r1 = sol(ind+1,mRes,prim,X,Y)
-                r2 = prim+sol(ind+1,mRes-1,prim,X,Y)
-                r3 = sol(ind+1,mRes-1,prim+1,X,Y)
-                r = max(r1,max(r2,r3))
-
-        matInd[ind][mRes][prim] = r
-
-    return matInd[n-1][n-1][n-1]
-
-def consola(X, Y, m):
+def consola(l:list):
+    X = l[0]
+    Y = l[1]
+    m = int(l[2])
+    n = len(X)
     if (Y[0] == Y[1]):
-        conteoOcurrencias(X,Y,m)
+        resultado = conteoOcurrencias(X,Y,m)
     else:
-        sol(0,m,0,X,Y)
+        resultado = subSeqDif(0,0,m,X,Y)
+    return resultado
 
 
-X = 'qcqc'
-Y = 'qc'
-m = 2
-print(consola(X,Y,m))
-
-"""
+print(consola(['ccqq','qc','2']))
