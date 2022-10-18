@@ -3,7 +3,7 @@ import sys
 import time
 
 #Caso - la cadena de la subsecuencia tiene las dos mismas letras
-def conteoOcurrencias(X,Y,m):
+def conteoOcurrencias1(X,Y,m):
     conteo = 0
     #Longitud de la cadena X
     n = len(X)
@@ -16,7 +16,7 @@ def conteoOcurrencias(X,Y,m):
     return int(((conteo-1)*conteo)/2)
 
 #Caso - la cadena de la subsecuencia tiene diferentes letras
-def subSeqDif(ind,prim,mRes,X,Y,DP):
+def conteoOcurrencias2(ind,prim,mRes,X,Y,DP):
     #Longitud de la cadena X
     n = len(X)
     #El programa termina de ejecutarse
@@ -26,36 +26,37 @@ def subSeqDif(ind,prim,mRes,X,Y,DP):
     if (not (DP[ind][prim][mRes] == -1)):
         return DP[ind][prim][mRes]
     #Avance en el indice de la cadena
-    sol = subSeqDif(ind+1,prim,mRes,X,Y,DP)
+    sol = conteoOcurrencias2(ind+1,prim,mRes,X,Y,DP)
     #Booleano - el elemento del indice es diferente que el primer elemento de la subcadena
     cond = (not (X[ind] == Y[0]))
     if mRes >= cond: #Si aún quedan reemplazos por hacer 
         #Si se cumple la condición, se hace el reemplazo por el primer elemento de la subcadena
-        sol = max(sol, subSeqDif(ind+1, prim+1, mRes-cond,X,Y,DP))
+        sol = max(sol, conteoOcurrencias2(ind+1, prim+1, mRes-cond,X,Y,DP))
     #Condición, el elemento es diferente al segundo elemento de la subcadena
     cond = (not (X[ind] == Y[1]))
     #Condición, el primer elemento de la subcadena es igual al segundo elemento - problema de conteoOcurrencias()
     cond2 = (Y[0] == Y[1])
     if mRes >= cond: #Si aún quedan reemplazos por hacer
         #Si se cumple la condición, se hace el reemplazo por el segundo elemento de la subcadena
-        sol = max(sol, prim + subSeqDif(ind+1, prim+cond2, mRes-cond,X,Y,DP)) 
+        sol = max(sol, prim + conteoOcurrencias2(ind+1, prim+cond2, mRes-cond,X,Y,DP)) 
     DP[ind][prim][mRes] = sol #Añadir a la matriz DP
     return sol
 
 
 #Función para evaluar por casos
-def consola(l:list):
+def conteoOcurrencias(l:list):
     X = l[0]
     Y = l[1]
     m = int(l[2])
     n = len(X)
     if (Y[0] == Y[1]):
-        resultado = conteoOcurrencias(X,Y,m)
+        resultado = conteoOcurrencias1(X,Y,m)
     else:
         DP = [[[-1] * (n+1) for _ in [0]*n] for _ in [0]*n]
         #Empezar desde indice 0, conteo 0 y m reemplazos restantes
-        resultado = subSeqDif(0,0,m,X,Y,DP)
+        resultado = conteoOcurrencias2(0,0,m,X,Y,DP)
     return resultado
+
 
 #Función para compilar los datos
 def main():
@@ -66,7 +67,7 @@ def main():
     for i in range(0,casos):
        numeros = [num for num in linea.split()]
        start = (time.time())
-       respuesta = consola(numeros)
+       respuesta = conteoOcurrencias(numeros)
        end = (time.time())
        sumaT = sumaT + (end - start) #Tiempo acumulado
        print((respuesta))
@@ -75,5 +76,4 @@ def main():
 
     
 main()
-
 
